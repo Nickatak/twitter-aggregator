@@ -1,0 +1,1 @@
+* * * * * cd /home/path/to/dbfile && /path/to/venv/bin/python /path/to/fetch.py
