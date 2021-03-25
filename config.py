@@ -6,3 +6,4 @@ class DevConfig:
 
     SYNC_DB = True
     TESTING = False
+    DISC_TOKEN = 'Nzc5NDk0NTU3ODU4NTI5MzAw.X7hW4A.YTetYOy9jGk9tfU0ohs_8jo9O70'
