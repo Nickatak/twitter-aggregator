@@ -78,5 +78,6 @@ class DiscordAPI(object):
         data = {
             'content' : message,
         }
+        print("sending")
         resp = requests.post(cls.WEBHOOK_URL, data=data)
         resp.raise_for_status()

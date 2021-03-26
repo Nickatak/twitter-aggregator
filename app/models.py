@@ -49,14 +49,35 @@ class Tweet(pw.Model):
         database = db
 
     @classmethod
+    def exists_by_id(cls, tweet_id):
+        '''Determines whether or not a tweet exists in the DB already, given an ID.
+                :tweet_id: Tweet's ID (integer).
+        
+            returns:
+                Boolean (True) or None
+        '''
+
+        return cls.get_or_none(Tweet.id == tweet_id)
+
+    @classmethod
     def get_most_recent_by_idol_id(cls, idol_id):
-        '''Fetches the latest tweet in the DB by a certain idol, given that idol's ID.
+        '''Gets the latest tweet in the DB by a certain idol, given that idol's ID.
                 :idol_id: Idol's ID (integer).
             returns:
                 Tweet instance OR None.
         '''
 
-        return cls.select().where(Tweet.idol_id == idol['id']).order_by(Tweet.tweeted_at.desc()).limit(1)[0]
+        return cls.select().where(Tweet.idol_id == idol_id).order_by(Tweet.created_at.desc()).limit(1)[0]
+
+    @classmethod
+    def get_unsent_tweets_by_idol_id(cls, idol_id):
+        '''Gets all unsent tweets in chronological order (oldest first) by a certain idol, given that idol's ID.
+                :idol_id: Idol's ID (integer).
+            returns:
+                List of Tweet objects.
+        '''
+
+        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.has_been_sent == False)).order_by(Tweet.created_at)
 
 
 def init_db():
