@@ -49,6 +49,31 @@ class Tweet(pw.Model):
         database = db
 
     @classmethod
+    def is_hl_retweet(cls, idol_usernames, tweet_text):
+        '''Determines whether or not a tweet is a retweet of another idol given it's text-content.
+                :idols_usernames: List of idol usernames to check against.
+                :tweet_text: String content of the tweet.
+
+            returns:
+                Boolean: True if it is a retweet, False if it is not.
+        '''
+
+        try:
+            # First two chars are RT
+            rt_tag = tweet_text[0:2]
+
+            if rt_tag == 'RT':
+                # Extracts the username from the pattern: `RT @username `.
+                username = tweet_text[4:tweet_text.find(':', 4)]
+
+                return username in idol_usernames
+            else:
+                return False
+        except IndexError:
+            # For tweets that are shorter than 2 chars.
+            return False
+
+    @classmethod
     def exists_by_id(cls, tweet_id):
         '''Determines whether or not a tweet exists in the DB already, given an ID.
                 :tweet_id: Tweet's ID (integer).

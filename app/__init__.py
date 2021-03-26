@@ -42,6 +42,8 @@ class App(object):
                 None
         '''
 
+        idol_usernames = [idol.username for idol in self.idols]
+
         for idol in self.idols:
             most_recent_db_tweet = Tweet.get_most_recent_by_idol_id(idol.id)
 
@@ -50,7 +52,8 @@ class App(object):
                 new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
-                        Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id)
+                        print("Attempting to create new tweet {}".format(Tweet.is_hl_retweet(idol_usernames, tweet['text'])))
+                        Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id, has_been_sent=Tweet.is_hl_retweet(idol_usernames, tweet['text']))
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the discord webhook.'''
@@ -59,7 +62,7 @@ class App(object):
         for idol in self.idols:
             tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
             for tweet in tweets:
-                formatted_message = '**{} ({}) tweeted at {}**:\n\n {}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
+                formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
                 tweet.has_been_sent = True
                 tweet.save()
                 DiscordAPI.send_message(formatted_message)
