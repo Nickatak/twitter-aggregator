@@ -12,12 +12,13 @@ class App(object):
     def __init__(self):
         # Create tables if necessary.
         init_db()
-        print("init db")
+        # Fill and update JSON data with the required fields.
+        fill_idol_data()
+        self.idols = load_idols_from_json()
+
         # synchronized the DB with the JSON data.
         if DevConfig.SYNC_DB:
-            fill_idol_data()
-        print("json data synced")
-        self.idols = load_idols_from_json()
+            Idol.sync_idols(self.idols)
 
 
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).

@@ -33,7 +33,7 @@ class Idol(pw.Model):
         # Add in any missing idols to the DB:
         for idol in idols:
             if idol['id'] not in db_twitter_ids:
-                cls.create(id=idol['id'], twitter_username=idol['username'])
+                cls.create(id=idol['id'], username=idol['username'], name=idol['name'])
 
 class Tweet(pw.Model):
     id = pw.BigIntegerField()
