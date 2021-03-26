@@ -49,13 +49,14 @@ class Tweet(pw.Model):
         database = db
 
     @classmethod
-    def get_latest_by_idol_id(cls, idol_id):
+    def get_most_recent_by_idol_id(cls, idol_id):
         '''Fetches the latest tweet in the DB by a certain idol, given that idol's ID.
                 :idol_id: Idol's ID (integer).
             returns:
                 Tweet instance OR None.
         '''
-        return cls.select().where(cls.idol_id == idol_id).order_by(cls.created_at.desc())
+
+        return cls.select().where(Tweet.idol_id == idol['id']).order_by(Tweet.tweeted_at.desc()).limit(1)[0]
 
 
 def init_db():
