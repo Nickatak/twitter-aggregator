@@ -20,16 +20,20 @@ class App(object):
         if DevConfig.SYNC_DB:
             Idol.sync_idols(self.idols)
 
-
+        print("done syncing")
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).
-        Tweet.seed_tweets(self.idols)
+        self.seed_tweets()
+        print("done seeding.")
 
     def seed_tweets(self):
         '''Fetches 1 tweet (their most recent) per idol IF the idol doesn't have any tweet in the DB already.'''
 
         for idol in self.idols:
             if not Idol.get(Idol.id == idol['id']).tweets:
-                print("{}: idol doesn't have tweets".format(idol['username']))
+                tweet = TwitterAPI.fetch_most_recent_tweet(idol['id'])
+                print(tweet)
+                print('-' * 50)
+                Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol['id'])
 
 
     def get_recent_tweets(self):

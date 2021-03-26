@@ -35,10 +35,11 @@ class Idol(pw.Model):
             if idol['id'] not in db_twitter_ids:
                 cls.create(id=idol['id'], username=idol['username'], name=idol['name'])
 
+
 class Tweet(pw.Model):
     id = pw.BigIntegerField()
-    created_at = pw.DateTimeField()
     text = pw.CharField()
+    created_at = pw.DateTimeField()
     has_been_sent = pw.BooleanField(default=False)
 
     idol = pw.ForeignKeyField(Idol, backref='tweets')
@@ -55,16 +56,6 @@ class Tweet(pw.Model):
                 Tweet instance OR None.
         '''
         return cls.select().where(cls.idol_id == idol_id).order_by(cls.created_at.desc())
-
-    @classmethod
-    def seed_tweets(cls, idols):
-        # Populates the DB with one tweet per idol.
-        for idol in idols:
-            if Tweet.get_or_none(cls.idol_id == idol['id']) is None:
-                latest_tweet = TwitterAPI.fetch_tweets(idol['id'])
-                #I've marked them as has_been_sent already so we don't flood discord on initial run.
-                Tweet.create(id=latest_tweet['id'], tweeted_at=latest_tweet['created_at'], text=latest_tweet['text'], idol_id=idol['id'], has_been_sent=True)
-
 
 
 def init_db():

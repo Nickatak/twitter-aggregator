@@ -59,6 +59,18 @@ class TwitterAPI(object):
 
         return json.loads(response.content.decode('utf-8'))['data']
 
+    @classmethod
+    def fetch_most_recent_tweet(cls, twitter_id):
+        '''Fetches the most-recent tweet given a user's ID.
+                This is a syntactic-sugar wrapper around TwitterAPI.fetch_tweets.
+            
+            returns:
+                Dictionary (a singular tweet).
+        '''
+        try:
+            return cls.fetch_tweets(twitter_id)[0]
+        except IndexError:
+            return None
 
 
 class DiscordAPI(object):
