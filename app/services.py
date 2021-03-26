@@ -27,10 +27,15 @@ class TwitterAPI(object):
             returns: 
                 List of dictionaries (users).
         '''
+        print("resping")
+        print(cls.USERNAMES_ENDPOINT.format(','.join(usernames)))
 
         response = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
-        users = json.loads(response.content.decode('utf-8'))['data']
-
+        print("after resp")
+        try:
+            users = json.loads(response.content.decode('utf-8'))['data']
+        except:
+            print(response.content.decode('utf-8'))
         # Change id type from string to int.
         for user in users:
             user['id'] = int(user['id'])

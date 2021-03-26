@@ -1,6 +1,6 @@
 import peewee as pw
 from config import DevConfig
-from services import TwitterAPI
+from app.services import TwitterAPI
 
 db = pw.SqliteDatabase('idols.db')
 db.connect()

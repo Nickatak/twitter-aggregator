@@ -1,7 +1,7 @@
 # Miscellaneous helpers to control the JSON file.
 import json
 
-from services import TwitterAPI
+from app.services import TwitterAPI
 
 
 def load_idols_from_json():
@@ -17,7 +17,7 @@ def fill_idol_data():
         data = json.loads(fo.read())
 
     # Tag the id's onto each idol object.
-    idols = TwitterAPI.fetch_ids(idol['username'] for idol in data)
+    idols = TwitterAPI.fetch_ids([idol['username'] for idol in data])
     # Convert ids to integers.
     for idol in idols:
         idol['id'] = int(idol['id'])
