@@ -14,12 +14,12 @@ class App(object):
         init_db()
         # Fills and updates JSON data with the required fields.
         fill_idol_data()
-        self.idols = load_idols_from_json()
+        # Synchronizes the DB with the JSON data
+        idols = load_idols_from_json()
+        Idol.sync_idols(idols)
 
-        # Synchronizes the DB with the JSON data.
-        if DevConfig.SYNC_DB:
-            Idol.sync_idols(self.idols)
-
+        self.idols = Idol.select()
+        print("synced idols")
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).
         self.seed_tweets()
 
@@ -30,13 +30,13 @@ class App(object):
         '''
 
         for idol in self.idols:
-            if not Idol.get(Idol.id == idol['id']).tweets:
-                tweet = TwitterAPI.fetch_most_recent_tweet(idol['id'])
+            if not Idol.get(Idol.id == idol.id).tweets:
+                tweet = TwitterAPI.fetch_most_recent_tweet(idol.id)
 
                 if tweet is None:
                     raise ValueError("One of your idols doesn't have any tweets yet.")
 
-                Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol['id'], has_been_sent=True)
+                Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, has_been_sent=True)
 
     def get_recent_tweets(self):
         '''Fetches all recent tweets for all the idols.
@@ -45,18 +45,18 @@ class App(object):
         '''
 
         for idol in self.idols:
-            most_recent_db_tweet = Tweet.get_most_recent_by_idol_id(idol['id'])
-            new_tweets = TwitterAPI.fetch_tweets(idol['id'], most_recent_db_tweet.created_at)
+            most_recent_db_tweet = Tweet.get_most_recent_by_idol_id(idol.id)
+            new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
             for tweet in new_tweets:
                 if not Tweet.exists_by_id(tweet['id']):
-                    Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol['id'])
+                    Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id)
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the webhook.'''
 
         # This is inefficient, I'd rather not call the DB so much.
         for idol in self.idols:
-            tweets = Tweet.get_unsent_tweets_by_idol_id(idol['id'])
+            tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
 
             for tweet in tweets:
                 formatted_message = '{} ({}) tweeted at {}:\n\n {}'.format(tweet.idol.name, tweet.idol.username, tweet.created_at, tweet.text)
