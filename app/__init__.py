@@ -32,10 +32,9 @@ class App(object):
             if not Idol.get(Idol.id == idol.id).tweets:
                 tweet = TwitterAPI.fetch_most_recent_tweet(idol.id)
 
-                if tweet is None:
-                    raise ValueError("One of your idols doesn't have any tweets yet.")
-
-                Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, has_been_sent=True)
+                # This check is awful, I need to find a better way.
+                if tweet is not None:
+                    Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, has_been_sent=True)
 
     def get_recent_tweets(self):
         '''Fetches all recent tweets for all the idols.
@@ -45,10 +44,13 @@ class App(object):
 
         for idol in self.idols:
             most_recent_db_tweet = Tweet.get_most_recent_by_idol_id(idol.id)
-            new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
-            for tweet in new_tweets:
-                if not Tweet.exists_by_id(tweet['id']):
-                    Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id)
+
+            # This check is awful, I need to find a better way.
+            if most_recent_db_tweet is not None:
+                new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
+                for tweet in new_tweets:
+                    if not Tweet.exists_by_id(tweet['id']):
+                        Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id)
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the discord webhook.'''
@@ -57,7 +59,7 @@ class App(object):
         for idol in self.idols:
             tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
             for tweet in tweets:
-                formatted_message = '{} ({}) tweeted at {}:\n\n {}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
+                formatted_message = '**{} ({}) tweeted at {}**:\n\n {}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
                 tweet.has_been_sent = True
                 tweet.save()
                 DiscordAPI.send_message(formatted_message)

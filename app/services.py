@@ -3,6 +3,7 @@
 import json
 
 import requests
+import time
 
 from config import DevConfig
 
@@ -52,7 +53,12 @@ class TwitterAPI(object):
         else:
             response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&start_time={}'.format(end_date), headers=cls.AUTH_HEADERS)
 
-        return json.loads(response.content.decode('utf-8'))['data']
+        try:
+            return json.loads(response.content.decode('utf-8'))['data']
+        except KeyError:
+            #This means the twitter account has no tweets yet.
+            if json.loads(response.content.decode('utf-8'))['meta']['result_count'] == 0:
+                return []
 
     @classmethod
     def fetch_most_recent_tweet(cls, twitter_id):
@@ -81,3 +87,4 @@ class DiscordAPI(object):
         print("sending")
         resp = requests.post(cls.WEBHOOK_URL, data=data)
         resp.raise_for_status()
+        time.sleep(1)

@@ -66,8 +66,10 @@ class Tweet(pw.Model):
             returns:
                 Tweet instance OR None.
         '''
-
-        return cls.select().where(Tweet.idol_id == idol_id).order_by(Tweet.created_at.desc()).limit(1)[0]
+        try:
+            return cls.select().where(Tweet.idol_id == idol_id).order_by(Tweet.created_at.desc()).limit(1)[0]
+        except IndexError:
+            return None
 
     @classmethod
     def get_unsent_tweets_by_idol_id(cls, idol_id):
