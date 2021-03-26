@@ -1,10 +1,15 @@
-# Miscellaneous helpers to control the JSON file.
+# Miscellaneous helpers.
+from datetime import datetime, timezone, timedelta
 import json
 
 from app.services import TwitterAPI
 
 
 def load_idols_from_json():
+    '''Helper function to read in the data from idols.JSON.
+        returns:
+            List of dictionaries.
+    '''
     with open('idols.json', 'r') as fo:
         return json.loads(fo.read())
 
@@ -24,3 +29,12 @@ def fill_idol_data():
 
     with open('idols.json', 'w') as fo:
         fo.write(json.dumps(idols, indent=4))
+
+def convert_timestamp(timestamp):
+    '''Helper function to convert a non-aware timestamp to a human-readable timestamp (JST: UTC+9).
+        returns:
+            Human readable string representation of timestamp.
+    '''
+    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=9)
+
+    return dt.strftime('%b %d at %H:%M JST')

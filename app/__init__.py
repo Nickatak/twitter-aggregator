@@ -1,5 +1,5 @@
 
-from app.helpers import load_idols_from_json, fill_idol_data
+from app.helpers import load_idols_from_json, fill_idol_data, convert_timestamp
 from app.models import db, Idol, init_db, Tweet
 from app.services import TwitterAPI, DiscordAPI
 from config import DevConfig
@@ -19,7 +19,6 @@ class App(object):
         Idol.sync_idols(idols)
 
         self.idols = Idol.select()
-        print("synced idols")
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).
         self.seed_tweets()
 
@@ -52,24 +51,23 @@ class App(object):
                     Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id)
 
     def send_unsent_tweets(self):
-        '''Sends unsent tweets to the webhook.'''
+        '''Sends unsent tweets to the discord webhook.'''
 
-        # This is inefficient, I'd rather not call the DB so much.
+        # This is inefficient, I'd rather not call the DB so much, but it'll do for now.
         for idol in self.idols:
             tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
-
             for tweet in tweets:
-                formatted_message = '{} ({}) tweeted at {}:\n\n {}'.format(tweet.idol.name, tweet.idol.username, tweet.created_at, tweet.text)
+                formatted_message = '{} ({}) tweeted at {}:\n\n {}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
                 tweet.has_been_sent = True
                 tweet.save()
-                DiscordAPI.send_message(tweet)
+                DiscordAPI.send_message(formatted_message)
 
-    def run(self):
+    def mainloop(self):
         self.get_recent_tweets()
         self.send_unsent_tweets()
 
 def run():
     app = App()
-    app.run()
+    app.mainloop()
 
 
