@@ -24,7 +24,8 @@ class TwitterAPI(object):
         '''Fetches ids and names given twitter-usernames.
                 :usernames: List of usernames (strings).
 
-            returns: List of dictionaries (users).
+            returns: 
+                List of dictionaries (users).
         '''
 
         response = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
@@ -38,22 +39,21 @@ class TwitterAPI(object):
 
     @classmethod
     def fetch_tweets(cls, twitter_id, end_date=None):
-        '''Fetches tweets given a user's ID
+        '''Fetches tweets given a user's ID.  
                 :twitter_id: Integer ID of the twitter user.
-                :end_date: datetime string YYYY-MM-DD-HH:MM:SSZ (? Check this before finalizing docs).
+                :end_date: datetime string YYYY-MM-DD-HH:MM:SSZ INCLUSIVE (? Check this before finalizing docs).
 
-            returns: List of dictionaries (tweets).
+            returns:
+                List of dictionaries (tweets).
         '''
-
 
         if end_date is None:
             response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id), headers=cls.AUTH_HEADERS)
         else:
             response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&start_time={}'.format(end_date), headers=cls.AUTH_HEADERS)
 
-        tweets = json.loads(response.content.decode('utf-8'))['data']
+        return json.loads(response.content.decode('utf-8'))['data']
 
-        return tweets
 
 
 class DiscordAPI(object):
