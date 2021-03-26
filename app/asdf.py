@@ -1,20 +1,20 @@
 
 from models import db, Idol, init_db, Tweet
 
-from app.helpers import load_idols_from_json
+from app.helpers import load_idols_from_json, fill_idol_data
 from config import DevConfig
 from services import fetch_tweets
 
 
 class App(object):
     def __init__(self):
-        self.idols = load_idols_from_json()
-
-        # Create tables.
+        # Create tables if necessary.
         init_db()
+
         # synchronized the DB with the JSON data.
         if DevConfig.SYNC_DB:
-            Idol.sync_idols(self.idols)
+            fill_idol_data()
+        self.idols = load_idols_from_json()
 
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).
         Tweet.seed_tweets(self.idols)
