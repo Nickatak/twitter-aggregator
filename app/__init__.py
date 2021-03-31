@@ -50,10 +50,19 @@ class App(object):
             # This check is awful, I need to find a better way.
             if most_recent_db_tweet is not None:
                 new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
+                print(new_tweets)
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
                         print("Attempting to create new tweet {}".format(Tweet.is_hl_retweet(idol_usernames, tweet['text'])))
-                        Tweet.create(id=tweet['id'], created_at=tweet['created_at'], text=tweet['text'], idol_id=idol.id, has_been_sent=Tweet.is_hl_retweet(idol_usernames, tweet['text']))
+
+                        Tweet.create(
+                            id=tweet['id'],
+                            created_at=tweet['created_at'],
+                            text=tweet['text'], 
+                            idol_id=idol.id, 
+                            has_been_sent=Tweet.is_hl_retweet(idol_usernames, tweet['text']) or not Tweet.is_hl_reply(idol_usernames, tweet['text'])
+                            )
+
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the discord webhook.'''

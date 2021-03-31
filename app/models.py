@@ -50,7 +50,7 @@ class Tweet(pw.Model):
 
     @classmethod
     def is_hl_retweet(cls, idol_usernames, tweet_text):
-        '''Determines whether or not a tweet is a retweet of another idol given it's text-content.
+        '''Determines whether or not a tweet is a retweet of another idol given its text-content.
                 :idols_usernames: List of idol usernames to check against.
                 :tweet_text: String content of the tweet.
 
@@ -72,6 +72,29 @@ class Tweet(pw.Model):
         except IndexError:
             # For tweets that are shorter than 2 chars.
             return False
+
+    @classmethod
+    def is_hl_reply(cls, idol_usernames, tweet_text):
+        '''Determines whether or not a tweet is a reply TO another idol given its text-content
+                :idols_usernames: List of idol usernames to check against.
+                :tweet_text: String content of the tweet.
+
+            returns:
+                Boolean: True if it is a reply to another holopro member, False if it is not.
+        '''
+
+        try:
+            reply_tag = tweet_text[0]
+
+            if reply_tag == '@':
+                username = tweet_text[0:tweet_text.find(' ', 0)]
+
+                return username in idol_usernames
+            else:
+                return False
+        except IndexError:
+            return False
+
 
     @classmethod
     def exists_by_id(cls, tweet_id):
