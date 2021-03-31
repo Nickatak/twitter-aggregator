@@ -34,7 +34,7 @@ class App(object):
 
                 # This check is awful, I need to find a better way.
                 if tweet is not None:
-                    Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, has_been_sent=True)
+                    Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, needs_to_be_sent=False)
 
     def get_recent_tweets(self):
         '''Fetches all recent tweets for all the idols.
@@ -50,7 +50,7 @@ class App(object):
             # This check is awful, I need to find a better way.
             if most_recent_db_tweet is not None:
                 new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
-                print(new_tweets)
+
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
                         print("Attempting to create new tweet {}".format(Tweet.is_hl_retweet(idol_usernames, tweet['text'])))
@@ -60,7 +60,7 @@ class App(object):
                             created_at=tweet['created_at'],
                             text=tweet['text'], 
                             idol_id=idol.id, 
-                            has_been_sent=Tweet.is_hl_retweet(idol_usernames, tweet['text']) or not Tweet.is_hl_reply(idol_usernames, tweet['text'])
+                            needs_to_be_sent=not Tweet.is_hl_retweet(idol_usernames, tweet['text']) or Tweet.is_hl_reply(idol_usernames, tweet['text'])
                             )
 
 
