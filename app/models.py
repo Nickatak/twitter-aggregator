@@ -40,7 +40,7 @@ class Tweet(pw.Model):
     id = pw.BigIntegerField()
     text = pw.CharField()
     created_at = pw.DateTimeField()
-    has_been_sent = pw.BooleanField(default=False)
+    needs_to_be_sent = pw.BooleanField(default=True)
 
     idol = pw.ForeignKeyField(Idol, backref='tweets')
 
@@ -127,7 +127,7 @@ class Tweet(pw.Model):
                 List of Tweet objects.
         '''
 
-        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.has_been_sent == False)).order_by(Tweet.created_at)
+        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.needs_to_be_sent == False)).order_by(Tweet.created_at)
 
 
 def init_db():
