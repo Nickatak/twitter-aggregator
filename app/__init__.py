@@ -60,7 +60,7 @@ class App(object):
                             created_at=tweet['created_at'],
                             text=tweet['text'], 
                             idol_id=idol.id, 
-                            needs_to_be_sent=not Tweet.is_hl_retweet(idol_usernames, tweet['text']) or Tweet.is_hl_reply(idol_usernames, tweet['text'])
+                            needs_to_be_sent=(not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text'])
                             )
 
 
@@ -72,7 +72,7 @@ class App(object):
             tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
             for tweet in tweets:
                 formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
-                tweet.has_been_sent = True
+                tweet.needs_to_be_sent = False
                 tweet.save()
                 DiscordAPI.send_message(formatted_message)
 

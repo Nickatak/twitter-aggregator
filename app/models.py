@@ -127,7 +127,7 @@ class Tweet(pw.Model):
                 List of Tweet objects.
         '''
 
-        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.needs_to_be_sent == False)).order_by(Tweet.created_at)
+        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.needs_to_be_sent == True)).order_by(Tweet.created_at)
 
 
 def init_db():
