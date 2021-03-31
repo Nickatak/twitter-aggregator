@@ -87,7 +87,7 @@ class Tweet(pw.Model):
             reply_tag = tweet_text[0]
 
             if reply_tag == '@':
-                username = tweet_text[0:tweet_text.find(' ', 0)]
+                username = tweet_text[1:tweet_text.find(' ', 0)]
 
                 return username in idol_usernames
             else:

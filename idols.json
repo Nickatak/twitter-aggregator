@@ -16,7 +16,7 @@
     },
     {
         "id": 975275878673408001,
-        "name": "\u661f\u8857\u3059\u3044\u305b\u3044\u2604\ufe0f\u30db\u30ed\u30e9\u30a4\u30d60\u671f\u751f",
+        "name": "\u661f\u8857\u30e1\u30c6\u30aa\u2604\ufe0f\u30db\u30ed\u30e9\u30a4\u30d6SP00\u671f\u751f",
         "username": "suisei_hosimati"
     },
     {
@@ -31,17 +31,17 @@
     },
     {
         "id": 996643748862836736,
-        "name": "\u30a2\u30ad\u30ed\u30bcAkirose\ud83c\udf4e\u30d2\u30ed\u30a4\u30f3\u30aa\u30fc\u30c7\u30a3\u30b7\u30e7\u30f3\u914d\u4fe1\u958b\u59cb\ud83c\udfa7\u30db\u30ed\u30e9\u30a4\u30d61\u671f\u751f",
+        "name": "\u30e0\u30ad\u30ed\u30bcMUKIROSE\ud83c\udf4e\u30d2\u30ed\u30a4\u30f3\u30aa\u30fc\u30c7\u30a3\u30b7\u30e7\u30f3\u914d\u4fe1\u958b\u59cb\ud83c\udfa7\u30db\u30ed\u30e9\u30a4\u30d61\u671f\u751f",
         "username": "akirosenthal"
     },
     {
         "id": 996645451045617664,
-        "name": "\u590f\u8272\u307e\u3064\u308a\ud83c\udfee\u30db\u30ed\u30e9\u30a4\u30d61\u671f\u751f",
+        "name": "\u306a\u3064\u3044\u308d\u307e\u3064\u308a(5)\ud83c\udfee\u30db\u30ed\u30e9\u30a4\u30d61\u671f\u751f",
         "username": "natsuiromatsuri"
     },
     {
         "id": 997786053124616192,
-        "name": "\u767d\u4e0a\u30d5\u30d6\u30ad@\u30ab\u30e0\u30e9\u306e\u72d0",
+        "name": "\u9ed2\u4e0a\u30d5\u30d6\u30ad@\u30b3\u30fc\u30e9\u98f2\u307f\u305f\u3044",
         "username": "shirakamifubuki"
     },
     {
@@ -81,7 +81,7 @@
     },
     {
         "id": 1174223248655114246,
-        "name": "\u5f8b\u53ef(Rikka)\u2699\u30db\u30ed\u30b9\u30bf\u30fc\u30ba",
+        "name": "\u5f8b\u5b50(Ritsuko)\u2699\u30db\u30ed\u30b9\u30bf\u5973\u5b50\u90e8",
         "username": "rikkaroid"
     },
     {
@@ -136,17 +136,17 @@
     },
     {
         "id": 1234752200145899520,
-        "name": "Ayunda Risu(\u30ea\u30b9)\ud83d\udc3f@\u30db\u30ed\u30e9\u30a4\u30d6ID",
+        "name": "Ananda Wisnu(\u30ea\u30b9)\ud83d\udc3f@\u30db\u30ed\u30e9\u30a4\u30d6ID",
         "username": "ayunda_risu"
     },
     {
         "id": 1234753886520393729,
-        "name": "Moona Hoshinova (\u30e0\u30fc\u30ca)\ud83d\udd2e@\u30db\u30ed\u30e9\u30a4\u30d6ID",
+        "name": "Mamank Hoshinov (\u30e0\u30fc\u30ca)\ud83d\udd2e@\u30db\u30ed\u30e9\u30a4\u30d6ID",
         "username": "moonahoshinova"
     },
     {
         "id": 1235180878449397764,
-        "name": "Airani Iofifteen(\u30a4\u30aa\u30d5\u30a3)\ud83c\udfa8\u30db\u30ed\u30e9\u30a4\u30d6ID",
+        "name": "Adriani Yofie (\u30e8\u30d5\u30a3)\ud83c\udfa8\u30db\u30ed\u30e9\u30a4\u30d6ID",
         "username": "airaniiofifteen"
     },
     {
@@ -156,7 +156,7 @@
     },
     {
         "id": 1248567107173773313,
-        "name": "\u8352\u54ac\u30aa\u30a6\u30ac\ud83d\udc03\u30db\u30ed\u30b9\u30bf\u30fc\u30ba3\u671f\u751f@\u30a6\u9b54\u606f\u5b50",
+        "name": "\u304a\u304c\u3074",
         "username": "aragamioga"
     },
     {
@@ -186,17 +186,17 @@
     },
     {
         "id": 1328275136575799297,
-        "name": "Pavolia Reine (\u30ec\u30a4\u30cd)\ud83e\udd9a@\u30db\u30ed\u30e9\u30a4\u30d6ID",
+        "name": "Pavorio Reihan (\u30ec\u30a4\u30cd)\ud83e\udd9a@\u30db\u30ed\u30e9\u30a4\u30d6ID",
         "username": "pavoliareine"
     },
     {
         "id": 1328277233492844544,
-        "name": "Kureiji Ollie (\u30aa\u30ea\u30fc)\ud83e\udddf\u200d\u2640\ufe0f@\u30db\u30ed\u30e9\u30a4\u30d6ID /THANK YOU 500K!!",
+        "name": "Kureiji Ozzy (\u30aa\u30fc\u30b8\u30fc)\ud83e\udddf\u200d\u2642\ufe0f@\u30db\u30ed\u30e9\u30a4\u30d6ID /THANK YOU 500K!!",
         "username": "kureijiollie"
     },
     {
         "id": 1328277750000492545,
-        "name": "Anya Melfissa(\u30a2\u30fc\u30cb\u30e3)\ud83c\udf42@\u30db\u30ed\u30e9\u30a4\u30d6ID",
+        "name": "Arya Melvine(\u30a2\u30fc\u30cb\u30e3)\ud83c\udf42@\u30db\u30ed\u30e9\u30a4\u30d6ID",
         "username": "anyamelfissa"
     },
     {
@@ -211,7 +211,7 @@
     },
     {
         "id": 1027853566780698624,
-        "name": "\u5927\u7a7a\u30b9\u30d0\u30eb\ud83d\ude91",
+        "name": "\u521d\u671f\u7a7a\u30b9\u30d0\u30eb\ud83d\ude91",
         "username": "oozorasubaru"
     },
     {
@@ -241,7 +241,7 @@
     },
     {
         "id": 1133215093246664706,
-        "name": "\u514e\u7530\u307a\u3053\u3089\ud83d\udc6f\u200d\u2640\ufe0f\u30db\u30ed\u30e9\u30a4\u30d63\u671f\u751f",
+        "name": "\u6295\u7344\u4e2d \u514e\u7530\u307a\u3053\u3089\ud83d\udc6f\u200d\u2640\ufe0f21\u6642\u7dca\u6025\u751f\u914d\u4fe1",
         "username": "usadapekora"
     },
     {
@@ -251,7 +251,7 @@
     },
     {
         "id": 1154304634569150464,
-        "name": "\u4e0d\u77e5\u706b\u30d5\u30ec\u30a2\ud83d\udd25@\u30db\u30ed\u30e9\u30a4\u30d63\u671f\u751f",
+        "name": "\u4e0d\u77e5\u706b\u30db\u30e0\u30e9\ud83d\udd25@\u30db\u30ed\u30e9\u30a4\u30d63\u671f\u751f",
         "username": "shiranuiflare"
     },
     {
