@@ -88,3 +88,25 @@ class DiscordAPI(object):
         resp = requests.post(cls.WEBHOOK_URL, data=data)
         resp.raise_for_status()
         time.sleep(1)
+
+class GoogleAPI(object):
+    '''Container class for all Google Trnaslate-API related methods.'''
+
+    AUTH_HEADERS = {
+        'Ocp-Apim-Subscription-Key' : DevConfig.MICROSOFT_API_KEY,
+        'Ocp-Apim-Subscription-Region' : DevConfig.MICROSOFT_REGION,
+        'Content-Type' : 'application/json',
+    }
+    TRANSLATOR_ENDPOINT = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=en'
+
+    @classmethod
+    def translate_text(cls, message):
+        # Yes this is purposely a singular dict in a list.
+        data = [{
+            'Text' : message,
+        }]
+
+        resp = requests.post(TRANSLATOR_ENDPOINT, headers=headers, data=data)
+        translated_text = json.loads(resp.content.decode('utf-8'))['translations']['text']
+
+        return translated_text

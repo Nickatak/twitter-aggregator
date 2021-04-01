@@ -58,14 +58,14 @@ class App(object):
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
                         if (not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text']):
 
-                        # Do translation here.
-                        Tweet.create(
-                            id=tweet['id'],
-                            created_at=tweet['created_at'],
-                            text=tweet['text'], 
-                            idol_id=idol.id, 
-                            needs_to_be_sent=True
-                            )
+                            # Do translation here.
+                            Tweet.create(
+                                id=tweet['id'],
+                                created_at=tweet['created_at'],
+                                text=tweet['text'], 
+                                idol_id=idol.id, 
+                                needs_to_be_sent=True
+                                )
                     else:
                         # Still make the tweet for recording/timestamp purposes, but it doesn't need to be sent to the channel.
                         Tweet.create(
