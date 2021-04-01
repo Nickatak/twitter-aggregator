@@ -89,7 +89,7 @@ class DiscordAPI(object):
         resp.raise_for_status()
         time.sleep(1)
 
-class GoogleAPI(object):
+class MicrosoftAPI(object):
     '''Container class for all Google Trnaslate-API related methods.'''
 
     AUTH_HEADERS = {
@@ -106,7 +106,7 @@ class GoogleAPI(object):
             'Text' : message,
         }]
 
-        resp = requests.post(TRANSLATOR_ENDPOINT, headers=headers, data=data)
-        translated_text = json.loads(resp.content.decode('utf-8'))['translations']['text']
+        resp = requests.post(cls.TRANSLATOR_ENDPOINT, headers=cls.AUTH_HEADERS, json=data)
+        translated_text = json.loads(resp.content.decode('utf-8'))[0]['translations'][0]['text']
 
         return translated_text

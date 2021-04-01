@@ -1,7 +1,7 @@
 
 from app.helpers import load_idols_from_json, fill_idol_data, convert_timestamp
 from app.models import db, Idol, init_db, Tweet
-from app.services import TwitterAPI, DiscordAPI
+from app.services import TwitterAPI, DiscordAPI, MicrosoftAPI
 from config import DevConfig
 
 
@@ -53,16 +53,15 @@ class App(object):
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
-                        print("Attempting to create new tweet {}".format(Tweet.is_hl_retweet(idol_usernames, tweet['text'])))
-
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
                         if (not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text']):
-
+                            print("New relayable tweet detected. Translating tweet.")
+                            translated_text = MicrosoftAPI.translate_text(tweet['text'])
                             # Do translation here.
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],
-                                text=tweet['text'], 
+                                text=translated_text, 
                                 idol_id=idol.id, 
                                 needs_to_be_sent=True
                                 )
