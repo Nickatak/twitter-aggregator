@@ -40,7 +40,7 @@ class Tweet(pw.Model):
     id = pw.BigIntegerField()
     text = pw.CharField()
     created_at = pw.DateTimeField()
-    needs_to_be_sent = pw.BooleanField(default=True)
+    needs_to_be_sent = pw.BooleanField(default=False)
 
     idol = pw.ForeignKeyField(Idol, backref='tweets')
 

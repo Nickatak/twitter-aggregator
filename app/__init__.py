@@ -55,14 +55,25 @@ class App(object):
                     if not Tweet.exists_by_id(tweet['id']):
                         print("Attempting to create new tweet {}".format(Tweet.is_hl_retweet(idol_usernames, tweet['text'])))
 
+                        # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
+                        if (not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text']):
+
+                        # Do translation here.
                         Tweet.create(
                             id=tweet['id'],
                             created_at=tweet['created_at'],
                             text=tweet['text'], 
                             idol_id=idol.id, 
-                            needs_to_be_sent=(not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text'])
+                            needs_to_be_sent=True
                             )
-
+                    else:
+                        # Still make the tweet for recording/timestamp purposes, but it doesn't need to be sent to the channel.
+                        Tweet.create(
+                            id=tweet['id'],
+                            created_at=tweet['created_at'],
+                            text=tweet['text'], 
+                            idol_id=idol.id, 
+                            )
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the discord webhook.'''
@@ -75,6 +86,8 @@ class App(object):
                 tweet.needs_to_be_sent = False
                 tweet.save()
                 DiscordAPI.send_message(formatted_message)
+
+                # Need to do DB cleanup here.
 
     def mainloop(self):
         self.get_recent_tweets()
