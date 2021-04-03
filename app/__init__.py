@@ -84,7 +84,7 @@ class App(object):
                 orig_formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.user.name, tweet.user.screen_name, convert_timestamp(tweet.created_at), tweet.text)
                 orig_msg_link = DiscordAPI.send_message_to_orig_channel(orig_formatted_message)
 
-                trans_formatted_message = '**Translation of {}\'s tweet at {} ({})**:\n\n{}'.format(tweet.user.screen_name, convert_timestamp(tweet.created_at), orig_msg_link, translated_text)
+                trans_formatted_message = '**Translation of {}\'s tweet at {} (<{}>)**:\n\n{}'.format(tweet.user.screen_name, convert_timestamp(tweet.created_at), orig_msg_link, translated_text)
                 DiscordAPI.send_message_to_trans_channel(trans_formatted_message)
 
                 tweet.needs_to_be_sent = False
