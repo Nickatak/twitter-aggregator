@@ -1,12 +1,12 @@
 import peewee as pw
-from config import DevConfig
+
+
 from app.services import TwitterAPI
+from config import DevConfig
 
 db = pw.SqliteDatabase('idols.db')
 db.connect()
 
-'''CURRENTLY UNDER REWRITE 4/3/2021
-'''
 
 class TwitterUser(pw.Model):
     '''Columns have been changed to match Twitter's v1.1 API.  To be consistent across the application, this model has been named TwitterUser, since all Holopro members that we're tracking are indeed twitter users.  Throughout the comments, this model will be referred to as a "tracked user" or "tracked users."
@@ -26,9 +26,7 @@ class TwitterUser(pw.Model):
                 :users: List of dictionaries.  The dictionaries are gauranteed to have three keys: "id", "name", and "screen_name".
 
             returns:
-                None.
-
-            REWRITE COMPLETE 4/3/2021.                
+                None.             
         '''
 
 
@@ -70,9 +68,8 @@ class Tweet(pw.Model):
 
             returns:
                 Boolean: True if it is a retweet, False if it is not.
-
-            REWRITE COMPLETE 4/3/2021
         '''
+
         # If there's no mentions, then it CANNOT be a retweet/reply .
         if 'user_mentions' not in tweet['entities']:
             return False
@@ -95,8 +92,6 @@ class Tweet(pw.Model):
 
             returns:
                 Boolean: True if it is a reply to another holopro member, False if it is not.
-
-            REWRITE COMPLETE 4/3/2021
         '''
 
         # If there's no mentions, then it CANNOT be a retweet/reply .
@@ -131,9 +126,8 @@ class Tweet(pw.Model):
                 :idol_id: Idol's ID (integer).
             returns:
                 Tweet instance OR None.
-
-            REWRITE COMPLETE 4/3/2021
         '''
+
         try:
             return cls.select().where(Tweet.user_id == user_id).order_by(Tweet.created_at.desc()).limit(1)[0]
         except IndexError:
@@ -145,8 +139,6 @@ class Tweet(pw.Model):
                 :user_id: User's ID (integer).
             returns:
                 List of Tweet objects.
-
-            REWRITE COMPLETE 4/3/2021
         '''
 
         return cls.select().where((Tweet.user_id == user_id) & (Tweet.needs_to_be_sent == True)).order_by(Tweet.created_at)

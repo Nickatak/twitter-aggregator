@@ -5,14 +5,11 @@ from app.services import TwitterAPI, DiscordAPI, MicrosoftAPI
 from config import DevConfig
 
 
-
 class App(object):
     '''Main application class.'''
 
     def __init__(self):
         '''Loads and prefetches necessary information, initializes the tables for the DB, syncs the tracked user list, and provides a singular (most recent) tweet per tracked user.
-        
-        REWRITE COMPLETE 4/3/2021
         '''
         # Creates tables if necessary.
         create_tables()
@@ -30,8 +27,6 @@ class App(object):
         '''Fetches 1 tweet (their most recent) per tracked user IF the user doesn't have any tweets in the DB already.
             returns:
                 None
-
-            REWRITE COMPLETE 4/3/2021
         '''
 
         for user in self.tracked_users:
@@ -60,7 +55,6 @@ class App(object):
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
-                        print("Creating tweet")
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
                         if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) or Tweet.is_hp_reply(self.tracked_users, tweet):
                             Tweet.create(
@@ -85,8 +79,8 @@ class App(object):
         for user in self.tracked_users:
             tweets = Tweet.get_unsent_tweets_by_user_id(user.id)
             for tweet in tweets:
-                print("sending")
                 translated_text = MicrosoftAPI.translate_text(tweet.text)
+
                 orig_formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.user.name, tweet.user.screen_name, convert_timestamp(tweet.created_at), tweet.text)
                 orig_msg_link = DiscordAPI.send_message_to_orig_channel(orig_formatted_message)
 

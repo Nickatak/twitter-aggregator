@@ -1,20 +1,19 @@
 # Twitter API python wrappers.
 
 import json
+import time
 
 import requests
-import time
 
 from config import DevConfig
 
-class TwitterAPI(object):
-    '''Container class for all Twitter-API (Standard v1.1) related methods.
-    
-    TODO: REWRITE for v1.1 - 4/3/2021'''
 
-    # Gets users via username.  The maximum for doing it this way is 100 usernames in a single request. (https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by)
+class TwitterAPI(object):
+    '''Container class for all Twitter-API (Standard v1.1) related methods.'''
+
+    # URL for getting users via usernames.  The maximum for doing it this way is 100 usernames in a single request. (https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by)
     USERNAMES_ENDPOINT = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'
-    # Gets tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
+    # Base URL for getting tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
     TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1'
     # App-based authentication headers for twitter's API.
     AUTH_HEADERS = {
@@ -28,8 +27,6 @@ class TwitterAPI(object):
 
             returns: 
                 List of dictionaries (users).
-
-            REWRITE COMPLETE.
         '''
 
         response = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
@@ -45,8 +42,6 @@ class TwitterAPI(object):
 
             returns:
                 List of dictionaries (tweets).
-
-            REWRITE COMPLETE 4/3/2021
         '''
 
         response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&since_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
@@ -60,8 +55,6 @@ class TwitterAPI(object):
 
             returns:
                 Dictionary (a singular tweet).
-
-            REWRITE COMPLETE 4/3/2021.
         '''
 
         response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&limit=1', headers=cls.AUTH_HEADERS)
@@ -112,6 +105,7 @@ class DiscordAPI(object):
     @classmethod
     def __create_message_link(cls, server_id, channel_id, message_id):
         return 'https://discord.com/channels/{}/{}/{}'.format(server_id, channel_id, message_id)
+
 
 class MicrosoftAPI(object):
     '''Container class for all Google Trnaslate-API related methods.'''

@@ -10,7 +10,8 @@ def fill_user_data():
     '''Helper function to fill-in user data in the JSON file.
         The JSON file should consist of a list of objects, with each object having a username key at minimum.  This function reads in the JSON file, fetches all the associated data with each username key for each object, and then re-writes the JSON file with the new data.
 
-        REWRITE COMPLETE 4/3/2021
+        returns:
+            List of dictionaries (Twitter users).
     '''
 
     # Loads idols from JSON and fetches all associated twitter_ids.
