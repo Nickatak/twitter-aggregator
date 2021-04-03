@@ -46,24 +46,22 @@ class App(object):
                                  needs_to_be_sent=False)
 
     def get_recent_tweets(self):
-        '''Fetches all recent tweets for all the idols.
+        '''Fetches all recent tweets for all the tracked users.
             returns:
                 None
         '''
 
-        holopro_usernames = [user.username for user in self.tracked_users]
-
         for user in self.tracked_users:
             last_saved_tweet = Tweet.get_most_recent_by_user_id(user.id)
 
-            # This is for certain idols who have their twitter empty (Mana Aloe for example).
+            # This is for certain users who have their twitter empty (EG: Mana Aloe).
             if last_saved_tweet is not None:
                 new_tweets = TwitterAPI.fetch_tweets(user.id, last_saved_tweet.id)
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
-                        if (not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text']):
+                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) or Tweet.is_hl_reply(holopro_usernames, tweet['text']):
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],

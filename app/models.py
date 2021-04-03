@@ -63,51 +63,55 @@ class Tweet(pw.Model):
         database = db
 
     @classmethod
-    def is_hl_retweet(cls, idol_usernames, tweet_text):
-        '''Determines whether or not a tweet is a retweet of another idol given its text-content.
-                :idols_usernames: List of idol usernames to check against.
-                :tweet_text: String content of the tweet.
+    def is_hp_retweet(cls, holopro_users, tweet):
+        '''Determines whether or not a tweet is a retweet of another Holopro member (tracked user).
+                :holopro_users: A list of User objects from the DB.
+                :tweet: Dictionary representation of a tweet.
 
             returns:
                 Boolean: True if it is a retweet, False if it is not.
+
+            REWRITE COMPLETE 4/3/2021
         '''
-
-        try:
-            # First two chars are RT
-            rt_tag = tweet_text[0:2]
-
-            if rt_tag == 'RT':
-                # Extracts the username from the pattern: `RT @username `.
-                username = tweet_text[4:tweet_text.find(':', 4)]
-
-                return username in idol_usernames
-            else:
-                return False
-        except IndexError:
-            # For tweets that are shorter than 2 chars.
+        # If there's no mentions, then it CANNOT be a retweet/reply .
+        if 'user_mentions' not in tweet['entities']:
             return False
 
+        user_ids = dict((user.id, None) for user in holopro_users))
+        tweet_text = tweet['text']
+
+        for mentioned_user in tweet['entities']['user_mentions']:
+            # If one of our entities is marked at the third index within the message tweet (EG: `RT @username ...` where @username starts at the third index), then we know it's a retweet.
+            if mentioned_user['indices'][0] == 3 and mentioned_user['id'] in user_ids:
+                return True
+
+        return False
+                    
     @classmethod
-    def is_hl_reply(cls, idol_usernames, tweet_text):
-        '''Determines whether or not a tweet is a reply TO another idol given its text-content
-                :idols_usernames: List of idol usernames to check against.
+    def is_hp_reply(cls, holopro_users, tweet):
+        '''Determines whether or not a tweet is a reply TO another Holopro member (tracked user).
+                :holopro_users: A list of User objects from the DB.
                 :tweet_text: String content of the tweet.
 
             returns:
                 Boolean: True if it is a reply to another holopro member, False if it is not.
+
+            REWRITE COMPLETE 4/3/2021
         '''
 
-        try:
-            reply_tag = tweet_text[0]
-
-            if reply_tag == '@':
-                username = tweet_text[1:tweet_text.find(' ', 0)]
-
-                return username in idol_usernames
-            else:
-                return False
-        except IndexError:
+        # If there's no mentions, then it CANNOT be a retweet/reply .
+        if 'user_mentions' not in tweet['entities']:
             return False
+
+        user_ids = dict((user.id, None) for user in holopro_users))
+        tweet_text = tweet['text']
+
+        for mentioned_user in tweet['entities']['user_mentions']:
+            # If one of our entities is marked at the zeroth index within the message tweet (EG: `@username ...` where @username starts at the zeroth index), then we know it's a reply.
+            if mentioned_user['indices'][0] == 0 and mentioned_user['id'] in user_ids:
+                return True
+
+        return False
 
 
     @classmethod

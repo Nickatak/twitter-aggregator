@@ -59,7 +59,7 @@ class TwitterAPI(object):
             returns:
                 Dictionary (a singular tweet).
 
-            REWRITE COMPLETE.
+            REWRITE COMPLETE 4/3/2021.
         '''
 
         response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&limit=1', headers=cls.AUTH_HEADERS)
