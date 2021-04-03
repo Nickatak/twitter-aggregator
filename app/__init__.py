@@ -60,13 +60,14 @@ class App(object):
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
+                        print("Creating tweet")
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
-                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) or Tweet.is_hl_reply(holopro_usernames, tweet['text']):
+                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) or Tweet.is_hp_reply(self.tracked_users, tweet):
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],
                                 text=tweet['text'], 
-                                idol_id=idol.id, 
+                                user_id=user.id, 
                                 needs_to_be_sent=True
                                 )
                     else:
@@ -75,7 +76,7 @@ class App(object):
                             id=tweet['id'],
                             created_at=tweet['created_at'],
                             text=tweet['text'], 
-                            idol_id=idol.id, 
+                            user_id=user.id,  
                             )
 
     # def send_unsent_tweets(self):
@@ -94,12 +95,12 @@ class App(object):
     #             tweet.needs_to_be_sent = False
     #             tweet.save()
 
-    # def mainloop(self):
-    #     self.get_recent_tweets()
-    #     self.send_unsent_tweets()
+    def mainloop(self):
+        self.get_recent_tweets()
+        #self.send_unsent_tweets()
 
 def run():
     app = App()
-    # app.mainloop()
+    app.mainloop()
 
 

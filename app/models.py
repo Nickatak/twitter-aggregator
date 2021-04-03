@@ -77,7 +77,7 @@ class Tweet(pw.Model):
         if 'user_mentions' not in tweet['entities']:
             return False
 
-        user_ids = dict((user.id, None) for user in holopro_users))
+        user_ids = dict((user.id, None) for user in holopro_users)
         tweet_text = tweet['text']
 
         for mentioned_user in tweet['entities']['user_mentions']:
@@ -103,7 +103,7 @@ class Tweet(pw.Model):
         if 'user_mentions' not in tweet['entities']:
             return False
 
-        user_ids = dict((user.id, None) for user in holopro_users))
+        user_ids = dict((user.id, None) for user in holopro_users)
         tweet_text = tweet['text']
 
         for mentioned_user in tweet['entities']['user_mentions']:

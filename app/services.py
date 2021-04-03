@@ -38,9 +38,9 @@ class TwitterAPI(object):
         return users
 
     @classmethod
-    def fetch_tweets(cls, twitter_id, last_tweet_id):
+    def fetch_tweets(cls, user_id, last_tweet_id):
         '''Fetches tweets given a user's ID.  
-                :twitter_id: Integer ID of the twitter user.
+                :user_id: Integer ID of the twitter user.
                 :last_tweet_id: ID of the most recent tweet from the last fetch.
 
             returns:
@@ -49,20 +49,22 @@ class TwitterAPI(object):
             REWRITE COMPLETE 4/3/2021
         '''
 
-        response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&user_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
+        response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&since_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
 
         return json.loads(response.content.decode('utf-8'))
 
     @classmethod
-    def fetch_most_recent_tweet(cls, twitter_id):
+    def fetch_most_recent_tweet(cls, user_id):
         '''Fetches the most-recent tweet given a user's ID.
+                :user_id: Integer ID of the twitter user.
+
             returns:
                 Dictionary (a singular tweet).
 
             REWRITE COMPLETE 4/3/2021.
         '''
 
-        response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&limit=1', headers=cls.AUTH_HEADERS)
+        response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&limit=1', headers=cls.AUTH_HEADERS)
         raw_data = response.content.decode('utf-8')
         try:
             return json.loads(raw_data)[0]
