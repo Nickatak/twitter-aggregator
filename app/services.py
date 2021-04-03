@@ -1,5 +1,3 @@
-# Twitter API python wrappers.
-
 import json
 import time
 
