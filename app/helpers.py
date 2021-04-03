@@ -12,6 +12,7 @@ def fill_user_data():
 
         REWRITE COMPLETE 4/3/2021
     '''
+
     # Loads idols from JSON and fetches all associated twitter_ids.
     with open(DevConfig.JSON_INPUT_FILE, 'r') as fo:
         data = json.loads(fo.read())
@@ -25,10 +26,12 @@ def fill_user_data():
     return users
 
 def convert_timestamp(timestamp):
-    '''Helper function to convert a non-aware timestamp to a human-readable timestamp (JST: UTC+9).
+    '''Helper function to convert a non-aware timestamp to a human-readable timestamp (JST: UTC+9).  
+            :timestamp: Timestamp directly from twitter's api.  Example timestamp: `Sat Apr 03 20:58:00 +0000 2021`
+            
         returns:
             Human readable string representation of timestamp.
     '''
-    dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(hours=9)
+    dt = datetime.strptime(timestamp, '%a %b %d %H:%M:%S %z %Y') + timedelta(hours=9)
 
     return dt.strftime('%b %d at %H:%M JST')

@@ -79,25 +79,26 @@ class App(object):
                             user_id=user.id,  
                             )
 
-    # def send_unsent_tweets(self):
-    #     '''Sends unsent tweets to the discord webhook.'''
+    def send_unsent_tweets(self):
+        '''Sends unsent tweets to the discord webhook.'''
 
-    #     for idol in self.idols:
-    #         tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
-    #         for tweet in tweets:
-    #             translated_text = MicrosoftAPI.translate_text(tweet['text'])
-    #             orig_formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
-    #             original_msg_link = DiscordAPI.send_message_to_orig_channel(orig_formatted_message)
+        for user in self.tracked_users:
+            tweets = Tweet.get_unsent_tweets_by_user_id(user.id)
+            for tweet in tweets:
+                print("sending")
+                translated_text = MicrosoftAPI.translate_text(tweet.text)
+                orig_formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.user.name, tweet.user.screen_name, convert_timestamp(tweet.created_at), tweet.text)
+                orig_msg_link = DiscordAPI.send_message_to_orig_channel(orig_formatted_message)
 
-    #             trans_formatted_message = '**Translation of {}\'s tweet at {} ({})**:\n\n{}'.format(tweet.idol.username, convert_timestamp(tweet.created_at), orig_msg_link, translated_text)
-    #             DiscordAPI.send_message_to_trans_channel(trans_formatted_message)
+                trans_formatted_message = '**Translation of {}\'s tweet at {} ({})**:\n\n{}'.format(tweet.user.screen_name, convert_timestamp(tweet.created_at), orig_msg_link, translated_text)
+                DiscordAPI.send_message_to_trans_channel(trans_formatted_message)
 
-    #             tweet.needs_to_be_sent = False
-    #             tweet.save()
+                tweet.needs_to_be_sent = False
+                tweet.save()
 
     def mainloop(self):
         self.get_recent_tweets()
-        #self.send_unsent_tweets()
+        self.send_unsent_tweets()
 
 def run():
     app = App()

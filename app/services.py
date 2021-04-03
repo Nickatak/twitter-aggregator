@@ -80,6 +80,12 @@ class DiscordAPI(object):
 
     @classmethod
     def send_message_to_orig_channel(cls, message):
+        '''Sends a message to the original (untranslated) channel.  Waits until discord responds with confirmation information for the newly created message by the webhook.
+                :message: Message body (String).
+
+            returns:
+                URL to the new message (String).
+        '''
         data = {
             'content' : message,
         }
@@ -93,16 +99,15 @@ class DiscordAPI(object):
 
     @classmethod
     def send_message_to_trans_channel(cls, message):
+        '''Sends a message to the translation channel.  Fire-and-forget method, does not return/process anything.
+            returns:
+                None.
+        '''
         data = {
             'content' : message,
         }
 
         resp = requests.post(cls.TRANS_WEBHOOK_URL, data=data)
-        resp.raise_for_status()
-
-        new_message = json.loads(resp.content.decode('utf-8'))
-
-        return cls.__create_message_link(DevConfig.DISC_SERVER_ID, new_message['channel_id'], new_message['id'])
 
     @classmethod
     def __create_message_link(cls, server_id, channel_id, message_id):

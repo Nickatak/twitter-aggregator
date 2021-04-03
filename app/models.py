@@ -140,14 +140,16 @@ class Tweet(pw.Model):
             return None
 
     @classmethod
-    def get_unsent_tweets_by_idol_id(cls, idol_id):
+    def get_unsent_tweets_by_user_id(cls, user_id):
         '''Gets all unsent tweets in chronological order (oldest first) by a certain idol, given that idol's ID.
-                :idol_id: Idol's ID (integer).
+                :user_id: User's ID (integer).
             returns:
                 List of Tweet objects.
+
+            REWRITE COMPLETE 4/3/2021
         '''
 
-        return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.needs_to_be_sent == True)).order_by(Tweet.created_at)
+        return cls.select().where((Tweet.user_id == user_id) & (Tweet.needs_to_be_sent == True)).order_by(Tweet.created_at)
 
 
 def create_tables():
