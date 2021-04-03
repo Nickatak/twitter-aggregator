@@ -15,7 +15,7 @@ class TwitterAPI(object):
     USERNAMES_ENDPOINT = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'
     # Base URL for getting tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
     TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1'
-    # App-based authentication headers for twitter's API.
+    # App-based authentication headers for Twitter's API.
     AUTH_HEADERS = {
         'Authorization' : 'Bearer {}'.format(DevConfig.TW_BEARER_TOKEN),
     }
@@ -29,8 +29,8 @@ class TwitterAPI(object):
                 List of dictionaries (users).
         '''
 
-        response = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
-        users = json.loads(response.content.decode('utf-8'))
+        resp = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
+        users = json.loads(resp.content.decode('utf-8'))
 
         return users
 
@@ -44,8 +44,8 @@ class TwitterAPI(object):
                 List of dictionaries (tweets).
         '''
 
-        response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&since_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
-        tweets = json.loads(response.content.decode('utf-8'))
+        resp = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&since_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
+        tweets = json.loads(resp.content.decode('utf-8'))
 
         return tweets
 
@@ -58,8 +58,8 @@ class TwitterAPI(object):
                 Dictionary (a singular tweet).
         '''
 
-        response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&limit=1', headers=cls.AUTH_HEADERS)
-        raw_data = response.content.decode('utf-8')
+        resp = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&limit=1', headers=cls.AUTH_HEADERS)
+        raw_data = resp.content.decode('utf-8')
         try:
             singular_tweet = json.loads(raw_data)[0]
 
@@ -76,7 +76,7 @@ class DiscordAPI(object):
 
     @classmethod
     def send_message_to_orig_channel(cls, message):
-        '''Sends a message to the original (untranslated) channel.  Waits until discord responds with confirmation information for the newly created message by the webhook.
+        '''Sends a message to the original (untranslated) channel.  Waits until Discord responds with confirmation information for the newly created message by the webhook.
                 :message: Message body (String).
 
             returns:
