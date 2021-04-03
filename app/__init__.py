@@ -90,12 +90,12 @@ class App(object):
                 tweet.needs_to_be_sent = False
                 tweet.save()
 
-    def mainloop(self):
+    def main_loop(self):
         self.get_recent_tweets()
         self.send_unsent_tweets()
 
 def run():
     app = App()
-    app.mainloop()
+    app.main_loop()
 
 
