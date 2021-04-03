@@ -21,7 +21,7 @@ class TwitterAPI(object):
     }
 
     @classmethod
-    def fetch_ids(cls, usernames):
+    def fetch_data(cls, usernames):
         '''Fetches ids and names given twitter-usernames.
                 :usernames: List of usernames (strings).
 
@@ -45,8 +45,9 @@ class TwitterAPI(object):
         '''
 
         response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&since_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
+        tweets = json.loads(response.content.decode('utf-8'))
 
-        return json.loads(response.content.decode('utf-8'))
+        return tweets
 
     @classmethod
     def fetch_most_recent_tweet(cls, user_id):

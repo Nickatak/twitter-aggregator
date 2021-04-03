@@ -18,8 +18,8 @@ def fill_user_data():
     with open(DevConfig.JSON_INPUT_FILE, 'r') as fo:
         data = json.loads(fo.read())
 
-    # Tag the id's onto each idol object.
-    users = TwitterAPI.fetch_ids([user['screen_name'] for user in data])
+    # Fetch and all associated user data.
+    users = TwitterAPI.fetch_data([user['screen_name'] for user in data])
 
     with open(DevConfig.JSON_OUTPUT_FILE, 'w') as fo:
         fo.write(json.dumps(users, indent=4))
