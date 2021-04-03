@@ -1,4 +1,3 @@
-
 from app.helpers import fill_user_data, convert_timestamp
 from app.models import create_tables, db, Tweet, TwitterUser
 from app.services import TwitterAPI, DiscordAPI, MicrosoftAPI

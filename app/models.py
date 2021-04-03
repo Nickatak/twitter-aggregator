@@ -1,6 +1,5 @@
 import peewee as pw
 
-
 from app.services import TwitterAPI
 from config import DevConfig
 
