@@ -1,6 +1,6 @@
 
-from app.helpers import load_idols_from_json, fill_idol_data, convert_timestamp
-from app.models import db, Idol, init_db, Tweet
+from app.helpers import fill_user_data, convert_timestamp
+from app.models import create_tables, db, Tweet, TwitterUser
 from app.services import TwitterAPI, DiscordAPI, MicrosoftAPI
 from config import DevConfig
 
@@ -10,31 +10,40 @@ class App(object):
     '''Main application class.'''
 
     def __init__(self):
+        '''Loads and prefetches necessary information, initializes the tables for the DB, syncs the tracked user list, and provides a singular (most recent) tweet per tracked user.
+        
+        REWRITE COMPLETE 4/3/2021
+        '''
         # Creates tables if necessary.
-        init_db()
+        create_tables()
         # Fills and updates JSON data with the required fields.
-        fill_idol_data()
-        # Synchronizes the DB with the JSON data
-        idols = load_idols_from_json()
-        Idol.sync_idols(idols)
+        json_users = fill_user_data()
+        # Synchronizes the DB with the JSON data.
+        TwitterUser.sync_users(json_users)
 
-        self.idols = Idol.select()
+        self.tracked_users = TwitterUser.select()
         # Seeds tweets if they don't exist for all the idols (pulls the most recent tweet).
         self.seed_tweets()
+        print("done sseding")
 
     def seed_tweets(self):
-        '''Fetches 1 tweet (their most recent) per idol IF the idol doesn't have any tweet in the DB already.
+        '''Fetches 1 tweet (their most recent) per tracked user IF the user doesn't have any tweets in the DB already.
             returns:
                 None
+
+            REWRITE COMPLETE 4/3/2021
         '''
 
-        for idol in self.idols:
-            if not Idol.get(Idol.id == idol.id).tweets:
-                tweet = TwitterAPI.fetch_most_recent_tweet(idol.id)
+        for user in self.tracked_users:
+            if not user.tweets:
+                tweet = TwitterAPI.fetch_most_recent_tweet(user.id)
 
-                # This check is awful, I need to find a better way.
-                if tweet is not None:
-                    Tweet.create(id=tweet['id'], text=tweet['text'], created_at=tweet['created_at'], idol_id=idol.id, needs_to_be_sent=False)
+                if tweet:
+                    Tweet.create(id=tweet['id'],
+                                 text=tweet['text'],
+                                 created_at=tweet['created_at'],
+                                 user_id=user.id,
+                                 needs_to_be_sent=False)
 
     def get_recent_tweets(self):
         '''Fetches all recent tweets for all the idols.
@@ -42,26 +51,23 @@ class App(object):
                 None
         '''
 
-        idol_usernames = [idol.username for idol in self.idols]
+        holopro_usernames = [user.username for user in self.tracked_users]
 
-        for idol in self.idols:
-            most_recent_db_tweet = Tweet.get_most_recent_by_idol_id(idol.id)
+        for user in self.tracked_users:
+            last_saved_tweet = Tweet.get_most_recent_by_user_id(user.id)
 
-            # This check is awful, I need to find a better way.
-            if most_recent_db_tweet is not None:
-                new_tweets = TwitterAPI.fetch_tweets(idol.id, most_recent_db_tweet.created_at)
+            # This is for certain idols who have their twitter empty (Mana Aloe for example).
+            if last_saved_tweet is not None:
+                new_tweets = TwitterAPI.fetch_tweets(user.id, last_saved_tweet.id)
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
                         # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
                         if (not Tweet.is_hl_retweet(idol_usernames, tweet['text'])) or Tweet.is_hl_reply(idol_usernames, tweet['text']):
-                            print("New relayable tweet detected. Translating tweet.")
-                            translated_text = MicrosoftAPI.translate_text(tweet['text'])
-                            # Do translation here.
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],
-                                text=translated_text, 
+                                text=tweet['text'], 
                                 idol_id=idol.id, 
                                 needs_to_be_sent=True
                                 )
@@ -74,26 +80,28 @@ class App(object):
                             idol_id=idol.id, 
                             )
 
-    def send_unsent_tweets(self):
-        '''Sends unsent tweets to the discord webhook.'''
+    # def send_unsent_tweets(self):
+    #     '''Sends unsent tweets to the discord webhook.'''
 
-        # This is inefficient, I'd rather not call the DB so much, but it'll do for now.
-        for idol in self.idols:
-            tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
-            for tweet in tweets:
-                formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
-                tweet.needs_to_be_sent = False
-                tweet.save()
-                DiscordAPI.send_message(formatted_message)
+    #     for idol in self.idols:
+    #         tweets = Tweet.get_unsent_tweets_by_idol_id(idol.id)
+    #         for tweet in tweets:
+    #             translated_text = MicrosoftAPI.translate_text(tweet['text'])
+    #             orig_formatted_message = '**{} ({}) tweeted at {}**:\n\n{}'.format(tweet.idol.name, tweet.idol.username, convert_timestamp(tweet.created_at), tweet.text)
+    #             original_msg_link = DiscordAPI.send_message_to_orig_channel(orig_formatted_message)
 
-                # Need to do DB cleanup here.
+    #             trans_formatted_message = '**Translation of {}\'s tweet at {} ({})**:\n\n{}'.format(tweet.idol.username, convert_timestamp(tweet.created_at), orig_msg_link, translated_text)
+    #             DiscordAPI.send_message_to_trans_channel(trans_formatted_message)
 
-    def mainloop(self):
-        self.get_recent_tweets()
-        self.send_unsent_tweets()
+    #             tweet.needs_to_be_sent = False
+    #             tweet.save()
+
+    # def mainloop(self):
+    #     self.get_recent_tweets()
+    #     self.send_unsent_tweets()
 
 def run():
     app = App()
-    app.mainloop()
+    # app.mainloop()
 
 

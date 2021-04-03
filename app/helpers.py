@@ -3,32 +3,26 @@ from datetime import datetime, timezone, timedelta
 import json
 
 from app.services import TwitterAPI
+from config import DevConfig
 
 
-def load_idols_from_json():
-    '''Helper function to read in the data from idols.JSON.
-        returns:
-            List of dictionaries.
-    '''
-    with open('idols.json', 'r') as fo:
-        return json.loads(fo.read())
-
-def fill_idol_data():
-    '''Helper function to fill idol data in the JSON file.
+def fill_user_data():
+    '''Helper function to fill-in user data in the JSON file.
         The JSON file should consist of a list of objects, with each object having a username key at minimum.  This function reads in the JSON file, fetches all the associated data with each username key for each object, and then re-writes the JSON file with the new data.
+
+        REWRITE COMPLETE 4/3/2021
     '''
     # Loads idols from JSON and fetches all associated twitter_ids.
-    with open('idols.json', 'r') as fo:
+    with open(DevConfig.JSON_INPUT_FILE, 'r') as fo:
         data = json.loads(fo.read())
 
     # Tag the id's onto each idol object.
-    idols = TwitterAPI.fetch_ids([idol['username'] for idol in data])
-    # Convert ids to integers.
-    for idol in idols:
-        idol['id'] = int(idol['id'])
+    users = TwitterAPI.fetch_ids([user['screen_name'] for user in data])
 
-    with open('idols.json', 'w') as fo:
-        fo.write(json.dumps(idols, indent=4))
+    with open(DevConfig.JSON_OUTPUT_FILE, 'w') as fo:
+        fo.write(json.dumps(users, indent=4))
+
+    return users
 
 def convert_timestamp(timestamp):
     '''Helper function to convert a non-aware timestamp to a human-readable timestamp (JST: UTC+9).

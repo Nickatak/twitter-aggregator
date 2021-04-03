@@ -5,35 +5,49 @@ from app.services import TwitterAPI
 db = pw.SqliteDatabase('idols.db')
 db.connect()
 
+'''CURRENTLY UNDER REWRITE 4/3/2021
+'''
 
-class Idol(pw.Model):
+class TwitterUser(pw.Model):
+    '''Columns have been changed to match Twitter's v1.1 API.  To be consistent across the application, this model has been named TwitterUser, since all Holopro members that we're tracking are indeed twitter users.  Throughout the comments, this model will be referred to as a "tracked user" or "tracked users."
+    '''
     # This should work, seeing how ID's are unsigned 64-bit integers.
     id = pw.BigIntegerField()
-    username = pw.CharField()
+    screen_name = pw.CharField()
     name = pw.CharField()
 
     class Meta:
-        table_name = 'idols'
+        table_name = 'twitter_users'
         database = db
 
     @classmethod
-    def sync_idols(cls, idols):
+    def sync_users(cls, users):
+        '''Synchronizes the database with the tracked users (idols.json).
+                :users: List of dictionaries.  The dictionaries are gauranteed to have three keys: "id", "name", and "screen_name".
+
+            returns:
+                None.
+
+            REWRITE COMPLETE 4/3/2021.                
+        '''
+
+
         # This method will sync the DB to the current idols.json information (WARNING: it will remove any idols that exist within the DB but aren't in the JSON file).
-        all_db_idols = cls.select()
+        db_users = cls.select()
 
         # Take advantage of hash map lookup speed.
-        db_twitter_ids = dict((idol.id, None) for idol in all_db_idols)
-        json_twitter_ids = dict((idol['id'], None) for idol in idols)
+        db_ids = dict((user.id, None) for user in db_users)
+        json_ids = dict((user['id'], None) for user in users)
 
-        # Prune removed idols from the existing DB:
-        for db_twitter_id in db_twitter_ids:
-            if db_twitter_id not in json_twitter_ids:
+        # Prune users that have been removed from our tracked-user list from the existing DB:
+        for db_id in db_ids:
+            if db_id not in json_ids:
                 cls.delete().where(cls.id == db_twitter_id)
 
         # Add in any missing idols to the DB:
-        for idol in idols:
-            if idol['id'] not in db_twitter_ids:
-                cls.create(id=idol['id'], username=idol['username'], name=idol['name'])
+        for user in users:
+            if user['id'] not in db_ids:
+                cls.create(id=user['id'], screen_name=user['screen_name'], name=user['name'])
 
 
 class Tweet(pw.Model):
@@ -42,7 +56,7 @@ class Tweet(pw.Model):
     created_at = pw.DateTimeField()
     needs_to_be_sent = pw.BooleanField(default=False)
 
-    idol = pw.ForeignKeyField(Idol, backref='tweets')
+    user = pw.ForeignKeyField(TwitterUser, backref='tweets')
 
     class Meta:
         table_name = 'tweets'
@@ -108,14 +122,16 @@ class Tweet(pw.Model):
         return cls.get_or_none(Tweet.id == tweet_id)
 
     @classmethod
-    def get_most_recent_by_idol_id(cls, idol_id):
+    def get_most_recent_by_user_id(cls, user_id):
         '''Gets the latest tweet in the DB by a certain idol, given that idol's ID.
                 :idol_id: Idol's ID (integer).
             returns:
                 Tweet instance OR None.
+
+            REWRITE COMPLETE 4/3/2021
         '''
         try:
-            return cls.select().where(Tweet.idol_id == idol_id).order_by(Tweet.created_at.desc()).limit(1)[0]
+            return cls.select().where(Tweet.user_id == user_id).order_by(Tweet.created_at.desc()).limit(1)[0]
         except IndexError:
             return None
 
@@ -130,11 +146,7 @@ class Tweet(pw.Model):
         return cls.select().where((Tweet.idol_id == idol_id) & (Tweet.needs_to_be_sent == True)).order_by(Tweet.created_at)
 
 
-def init_db():
+def create_tables():
     # Initializes the tables.
-    ALL_TABLES = (Idol, Tweet)
-
-    if DevConfig.DROP_DB:
-        db.drop_tables(DROP_DB)
-
+    ALL_TABLES = (TwitterUser, Tweet)
     db.create_tables(ALL_TABLES)

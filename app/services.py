@@ -8,13 +8,14 @@ import time
 from config import DevConfig
 
 class TwitterAPI(object):
-    '''Container class for all Twitter-API related methods.'''
+    '''Container class for all Twitter-API (Standard v1.1) related methods.
+    
+    TODO: REWRITE for v1.1 - 4/3/2021'''
 
     # Gets users via username.  The maximum for doing it this way is 100 usernames in a single request. (https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by)
-    USERNAMES_ENDPOINT = 'https://api.twitter.com/2/users/by?usernames={}'
+    USERNAMES_ENDPOINT = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'
     # Gets tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
-    TIMELINE_ENDPOINT = 'https://api.twitter.com/2/users/{}/tweets?tweet.fields=created_at'
-
+    TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1'
     # App-based authentication headers for twitter's API.
     AUTH_HEADERS = {
         'Authorization' : 'Bearer {}'.format(DevConfig.TW_BEARER_TOKEN),
@@ -27,67 +28,83 @@ class TwitterAPI(object):
 
             returns: 
                 List of dictionaries (users).
+
+            REWRITE COMPLETE.
         '''
 
         response = requests.get(cls.USERNAMES_ENDPOINT.format(','.join(usernames)), headers=cls.AUTH_HEADERS)
-        users = json.loads(response.content.decode('utf-8'))['data']
-
-        # Change id type from string to int.
-        for user in users:
-            user['id'] = int(user['id'])
+        users = json.loads(response.content.decode('utf-8'))
 
         return users
 
     @classmethod
-    def fetch_tweets(cls, twitter_id, end_date=None):
+    def fetch_tweets(cls, twitter_id, last_tweet_id):
         '''Fetches tweets given a user's ID.  
                 :twitter_id: Integer ID of the twitter user.
-                :end_date: datetime string YYYY-MM-DD-HH:MM:SSZ INCLUSIVE (? Check this before finalizing docs).
+                :last_tweet_id: ID of the most recent tweet from the last fetch.
 
             returns:
                 List of dictionaries (tweets).
+
+            REWRITE COMPLETE 4/3/2021
         '''
 
-        if end_date is None:
-            response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id), headers=cls.AUTH_HEADERS)
-        else:
-            response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&start_time={}'.format(end_date), headers=cls.AUTH_HEADERS)
+        response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&user_id={}'.format(last_tweet_id), headers=cls.AUTH_HEADERS)
 
-        try:
-            return json.loads(response.content.decode('utf-8'))['data']
-        except KeyError:
-            #This means the twitter account has no tweets yet.
-            if json.loads(response.content.decode('utf-8'))['meta']['result_count'] == 0:
-                return []
+        return json.loads(response.content.decode('utf-8'))
 
     @classmethod
     def fetch_most_recent_tweet(cls, twitter_id):
         '''Fetches the most-recent tweet given a user's ID.
-                This is a syntactic-sugar wrapper around TwitterAPI.fetch_tweets.
-            
             returns:
                 Dictionary (a singular tweet).
+
+            REWRITE COMPLETE.
         '''
+
+        response = requests.get(cls.TIMELINE_ENDPOINT.format(twitter_id) + '&limit=1', headers=cls.AUTH_HEADERS)
+        raw_data = response.content.decode('utf-8')
         try:
-            return cls.fetch_tweets(twitter_id)[0]
+            return json.loads(raw_data)[0]
         except IndexError:
-            return None
+            return []
 
 
 class DiscordAPI(object):
     '''Container class for all Discord-API related methods.'''
 
-    WEBHOOK_URL = DevConfig.DISC_WEBHOOK_URL
+    ORIG_WEBHOOK_URL = DevConfig.DISC_ORIG_CHANNEL_WEBHOOK_URL
+    TRANS_WEBHOOK_URL = DevConfig.DISC_TRANS_CHANNEL_WEBHOOK_URL
 
     @classmethod
-    def send_message(cls, message):
+    def send_message_to_orig_channel(cls, message):
         data = {
             'content' : message,
         }
-        print("sending")
-        resp = requests.post(cls.WEBHOOK_URL, data=data)
+
+        resp = requests.post(cls.ORIG_WEBHOOK_URL, data=data)
         resp.raise_for_status()
-        time.sleep(1)
+
+        new_message = json.loads(resp.content.decode('utf-8'))
+
+        return cls.__create_message_link(DevConfig.DISC_SERVER_ID, new_message['channel_id'], new_message['id'])
+
+    @classmethod
+    def send_message_to_trans_channel(cls, message):
+        data = {
+            'content' : message,
+        }
+
+        resp = requests.post(cls.TRANS_WEBHOOK_URL, data=data)
+        resp.raise_for_status()
+
+        new_message = json.loads(resp.content.decode('utf-8'))
+
+        return cls.__create_message_link(DevConfig.DISC_SERVER_ID, new_message['channel_id'], new_message['id'])
+
+    @classmethod
+    def __create_message_link(cls, server_id, channel_id, message_id):
+        return 'https://discord.com/channels/{}/{}/{}'.format(server_id, channel_id, message_id)
 
 class MicrosoftAPI(object):
     '''Container class for all Google Trnaslate-API related methods.'''
