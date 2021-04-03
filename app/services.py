@@ -61,9 +61,11 @@ class TwitterAPI(object):
         response = requests.get(cls.TIMELINE_ENDPOINT.format(user_id) + '&limit=1', headers=cls.AUTH_HEADERS)
         raw_data = response.content.decode('utf-8')
         try:
-            return json.loads(raw_data)[0]
+            singular_tweet = json.loads(raw_data)[0]
+
+            return singular_tweet
         except IndexError:
-            return []
+            return None
 
 
 class DiscordAPI(object):
@@ -109,7 +111,7 @@ class DiscordAPI(object):
 
 
 class MicrosoftAPI(object):
-    '''Container class for all Google Trnaslate-API related methods.'''
+    '''Container class for all Microsoft Translate-API related methods.'''
 
     AUTH_HEADERS = {
         'Ocp-Apim-Subscription-Key' : DevConfig.MICROSOFT_API_KEY,

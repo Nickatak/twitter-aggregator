@@ -33,7 +33,7 @@ class App(object):
             if not user.tweets:
                 tweet = TwitterAPI.fetch_most_recent_tweet(user.id)
 
-                if tweet:
+                if tweet is not None:
                     Tweet.create(id=tweet['id'],
                                  text=tweet['text'],
                                  created_at=tweet['created_at'],
