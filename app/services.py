@@ -12,7 +12,7 @@ class TwitterAPI(object):
     # URL for getting users via usernames.  The maximum for doing it this way is 100 usernames in a single request. (https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by)
     USERNAMES_ENDPOINT = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'
     # Base URL for getting tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
-    TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1'
+    TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1&tweet_mode=extended'
     # App-based authentication headers for Twitter's API.
     AUTH_HEADERS = {
         'Authorization' : 'Bearer {}'.format(DevConfig.TW_BEARER_TOKEN),

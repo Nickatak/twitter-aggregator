@@ -54,8 +54,20 @@ class App(object):
 
                 for tweet in new_tweets:
                     if not Tweet.exists_by_id(tweet['id']):
-                        # If it is NOT a retweet from another holopro member OR if it is a reply TO another holopro member...
-                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) or Tweet.is_hp_reply(self.tracked_users, tweet):
+                        # SOMETHING ABOUT THIS ISN'T WORKING CORRECTLY.
+
+                        # If it IS a retweet of a holopro member's tweet OR it is NOT
+                        #if (Tweet.is_hp_retweet(self.tracked_users, tweet)) or (not Tweet.is_hp_reply(self.tracked_users, tweet))
+
+                        # If it is NOT a retweet from another holopro member or if it is a reply TO another holopro member...
+                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) and Tweet.is_hp_reply(self.tracked_users, tweet):
+
+                            #Undo truncation:
+                            if 'retweeted_status' in tweet:
+                                tweet['text'] = tweet['retweeted_status']['full_text']
+                            else:
+                                tweet['text'] = tweet['full_text']
+
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],

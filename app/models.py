@@ -10,6 +10,7 @@ db.connect()
 class TwitterUser(pw.Model):
     '''Columns have been changed to match Twitter's v1.1 API.  To be consistent across the application, this model has been named TwitterUser, since all Holopro members that we're tracking are indeed twitter users.  Throughout the comments, this model will be referred to as a "tracked user" or "tracked users."
     '''
+
     # This should work, seeing how ID's are unsigned 64-bit integers.
     id = pw.BigIntegerField()
     screen_name = pw.CharField()
@@ -27,7 +28,6 @@ class TwitterUser(pw.Model):
             returns:
                 None.             
         '''
-
 
         # This method will sync the DB to the current idols.json information (WARNING: it will remove any idols that exist within the DB but aren't in the JSON file).
         db_users = cls.select()
