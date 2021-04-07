@@ -18,16 +18,14 @@ def write_json(content):
         fo.write(json.dumps(content, indent=4))
 
 def fill_user_data():
-    '''Helper function to fill-in user data in the JSON file.
-        The JSON file should consist of a list of objects, with each object having a username key at minimum.  This function reads in the JSON file, fetches all the associated data with each username key for each object, and then re-writes the JSON file with the new data.
+    '''Helper function to fill-in user data in the JSON file.  This also writes the acquired user data to the output file specified in the config.
 
         returns:
             List of dictionaries (Twitter users).
     '''
 
     data = read_json()
-    # Fetch all associated user data.
-    users = TwitterAPI.fetch_data([user['screen_name'] for user in data])
+    users = TwitterAPI.fetch_user_data([user['screen_name'] for user in data])
     write_json(users)
 
     return users

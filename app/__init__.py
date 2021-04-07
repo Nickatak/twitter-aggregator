@@ -33,6 +33,7 @@ class App(object):
                 tweet = TwitterAPI.fetch_most_recent_tweet(user.id)
 
                 if tweet is not None:
+                    tweet = Tweet.detruncate(tweet)
                     Tweet.create(id=tweet['id'],
                                  text=tweet['text'],
                                  created_at=tweet['created_at'],
@@ -53,36 +54,15 @@ class App(object):
                 new_tweets = TwitterAPI.fetch_tweets(user.id, last_saved_tweet.id)
 
                 for tweet in new_tweets:
+                    tweet = Tweet.detruncate(tweet)
                     if not Tweet.exists_by_id(tweet['id']):
-                        # SOMETHING ABOUT THIS ISN'T WORKING CORRECTLY.
-
-                        # If it IS a retweet of a holopro member's tweet OR it is NOT
-                        #if (Tweet.is_hp_retweet(self.tracked_users, tweet)) or (not Tweet.is_hp_reply(self.tracked_users, tweet))
-
-                        # If it is NOT a retweet from another holopro member or if it is a reply TO another holopro member...
-                        if (not Tweet.is_hp_retweet(self.tracked_users, tweet)) and Tweet.is_hp_reply(self.tracked_users, tweet):
-
-                            #Undo truncation:
-                            if 'retweeted_status' in tweet:
-                                tweet['text'] = tweet['retweeted_status']['full_text']
-                            else:
-                                tweet['text'] = tweet['full_text']
-
                             Tweet.create(
                                 id=tweet['id'],
                                 created_at=tweet['created_at'],
                                 text=tweet['text'], 
-                                user_id=user.id, 
-                                needs_to_be_sent=True
+                                user_id=user.id,  
+                                needs_to_be_sent=Tweet.determine_if_sending(self.tracked_users, tweet)
                                 )
-                    else:
-                        # Still make the tweet for recording/timestamp purposes, but it doesn't need to be sent to the channel.
-                        Tweet.create(
-                            id=tweet['id'],
-                            created_at=tweet['created_at'],
-                            text=tweet['text'], 
-                            user_id=user.id,  
-                            )
 
     def send_unsent_tweets(self):
         '''Sends unsent tweets to the discord webhook.'''

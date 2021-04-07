@@ -13,13 +13,16 @@ class TwitterAPI(object):
     USERNAMES_ENDPOINT = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'
     # Base URL for getting tweets via a user's ID.  Maximum for doing it this way is 100 messages in a single request.
     TIMELINE_ENDPOINT = 'https://api.twitter.com/1.1/statuses/user_timeline.json?user_id={}&trim_user=1&tweet_mode=extended'
+    # BASE URL for getting a singular tweet by the tweet's ID.
+    TWEET_ENDPOINT = 'https://api.twitter.com/1.1/statuses/show.json?id={}&tweet_mode=extended'
+
     # App-based authentication headers for Twitter's API.
     AUTH_HEADERS = {
         'Authorization' : 'Bearer {}'.format(DevConfig.TW_BEARER_TOKEN),
     }
 
     @classmethod
-    def fetch_data(cls, usernames):
+    def fetch_user_data(cls, usernames):
         '''Fetches ids and names given twitter-usernames.
                 :usernames: List of usernames (strings).
 
@@ -64,6 +67,22 @@ class TwitterAPI(object):
             return singular_tweet
         except IndexError:
             return None
+
+    @classmethod
+    def fetch_tweet(cls, tweet_id):
+        '''Fetches a singular tweet given the tweet's ID.  This function is only used for testing.
+                :tweet_id: Integer ID of the tweet.
+
+            returns:
+                Dictionary (a singular tweet).
+        '''
+
+        resp = requests.get(cls.TWEET_ENDPOINT.format(tweet_id), headers=cls.AUTH_HEADERS)
+        raw_data = resp.content.decode('utf-8')
+
+        singular_tweet = json.loads(raw_data)
+
+        return singular_tweet
 
 
 class DiscordAPI(object):

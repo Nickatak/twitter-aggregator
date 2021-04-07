@@ -60,6 +60,41 @@ class Tweet(pw.Model):
         database = db
 
     @classmethod
+    def detruncate(cls, tweet):
+        '''Adds the "text" key to the tweet after un-truncating the data from Twitter's API.'''
+
+        # The only time we need to explicitly untruncate is on retweets (and we CANNOT depend upon the "truncated" key as it doesn't work).
+        if 'retweeted_status' in tweet:
+            tweet['text'] = tweet['retweeted_status']['full_text']
+        else:
+            tweet['text'] = tweet['full_text']
+
+        return tweet
+
+    @classmethod
+    def determine_if_sending(cls, holopro_users, tweet):
+        '''Determines whether or not a tweet needs to be sent.
+                :tweet: Tweet object from twitter.
+            
+            returns:
+                Boolean: True if it needs to be sent, False it if does not.
+        '''
+
+        needs_to_be_sent = True
+
+        # If it's a retweet of another holopro user
+        if cls.is_hp_retweet(holopro_users, tweet):
+            needs_to_be_sent = False
+
+        # If it's a reply:
+        if tweet.get("in_reply_to_status_id", None) is not None:
+            # If it's a reply of another holopro user.
+            if cls.is_hp_reply(holopro_users, tweet):
+                needs_to_be_sent = False
+
+        return needs_to_be_sent
+
+    @classmethod
     def is_hp_retweet(cls, holopro_users, tweet):
         '''Determines whether or not a tweet is a retweet of another Holopro member (tracked user).
                 :holopro_users: A list of User objects from the DB.
